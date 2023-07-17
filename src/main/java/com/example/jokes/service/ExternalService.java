@@ -24,8 +24,8 @@ public class ExternalService {
         return IntStream.range(0, batches)
                 .parallel()
                 .mapToObj(i -> {
-                    int lastPageSize = i != batches - 1 ? pageSize : count % pageSize;
-                    return getJokeBatch(lastPageSize);
+                    int currentPageSize = i != batches - 1 ? pageSize : count % pageSize;
+                    return getJokeBatch(currentPageSize);
                 })
                 .flatMap(Collection::stream)
                 .toList();
