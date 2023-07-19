@@ -9,11 +9,12 @@ import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
-public class ExternalFeignClientAsync {
+public class JokesFeignClientAsyncService implements JokesFeignAdapter {
 
-    private final ExternalFeignClient externalFeignClient;
+    private final JokesFeignClient externalFeignClient;
 
     @Async
+    @Override
     public CompletableFuture<Joke> getRecordsAsync() {
         return CompletableFuture.completedFuture(externalFeignClient.getRandomJoke());
     }
