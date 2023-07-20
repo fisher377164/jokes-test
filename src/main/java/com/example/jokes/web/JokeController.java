@@ -1,7 +1,7 @@
 package com.example.jokes.web;
 
 import com.example.jokes.dto.Joke;
-import com.example.jokes.service.ExternalService;
+import com.example.jokes.service.JokesUseCase;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -19,9 +19,9 @@ import java.util.List;
 @RequestMapping(value = "/jokes")
 public class JokeController {
 
-    private final ExternalService externalService;
+    private final JokesUseCase jokesUseCase;
     @GetMapping
     public List<Joke> jokes(@RequestParam(defaultValue = "5") @Min(1) @Max(value = 100, message = "За один раз можна отримати не більше 100 шуток.") final Integer count) {
-        return externalService.getJokes(count);
+        return jokesUseCase.get(count);
     }
 }

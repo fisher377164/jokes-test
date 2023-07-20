@@ -1,0 +1,9 @@
+jokes:
+    async:
+        corePoolSize: 10
+        maxPoolSize: 20
+        threadNamePrefix: ext-async-
+    external:
+        url: https://official-joke-api.appspot.com/
+    app:
+        defaultPageSize: 10

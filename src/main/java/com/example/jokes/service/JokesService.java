@@ -1,7 +1,8 @@
 package com.example.jokes.service;
 
+import com.example.jokes.config.JokesProperties;
 import com.example.jokes.dto.Joke;
-import com.example.jokes.feign.ExternalFeignClientAsync;
+import com.example.jokes.feign.JokesFeignClientAsyncService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -12,26 +13,26 @@ import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
-public class ExternalService {
+public class JokesService implements JokesUseCase {
 
-    private final ExternalFeignClientAsync externalFeignClientAsync;
+    private final JokesFeignClientAsyncService externalFeignClientAsync;
+    private final JokesProperties jokesProperties;
 
-    public List<Joke> getJokes(final Integer count) {
-
-        int pageSize = 10; // to properties
-        int batches = (count / pageSize) + (count % pageSize > 0 ? 1 : 0);
+    @Override
+    public List<Joke> get(final Integer count) {
+        final var pageSize = jokesProperties.getApp().defaultPageSize();
+        final var batches = (count / pageSize) + (count % pageSize > 0 ? 1 : 0);
 
         return IntStream.range(0, batches)
-                .parallel()
                 .mapToObj(i -> {
-                    int currentPageSize = i != batches - 1 ? pageSize : count % pageSize;
-                    return getJokeBatch(currentPageSize);
+                    int currentPageSize = i != batches - 1 || count % pageSize == 0 ? pageSize : count % pageSize;
+                    return getJokesBatch(currentPageSize);
                 })
                 .flatMap(Collection::stream)
                 .toList();
     }
 
-    List<Joke> getJokeBatch(final Integer count) {
+    List<Joke> getJokesBatch(final Integer count) {
         return IntStream.range(0, count)
                 .parallel()
                 .mapToObj(i -> externalFeignClientAsync.getRecordsAsync())
